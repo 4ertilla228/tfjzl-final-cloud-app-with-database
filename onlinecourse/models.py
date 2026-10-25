@@ -113,11 +113,10 @@ class Choice(models.Model):
     def __str__(self):
         return self.choice_text
 
-# Submission model
 class Submission(models.Model):
     enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
     choices = models.ManyToManyField(Choice)
     date_submitted = models.DateField(default=now)
 
     def __str__(self):
-        return f"Enrollment: {self.enrollment}"
+        return f"Submission {self.id} for enrollment {self.enrollment.id}"

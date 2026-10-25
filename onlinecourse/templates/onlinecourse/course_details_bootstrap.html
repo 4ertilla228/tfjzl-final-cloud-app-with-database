@@ -1,23 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <meta charset="UTF-8">
     <title>{{ course.name }}</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 <div class="container mt-4">
-    <div class="jumbotron">
-        <h1 class="display-4">{{ course.name }}</h1>
-        <p class="lead">{{ course.description }}</p>
-    </div>
+    <h2>{{ course.name }}</h2>
+    <p class="lead">{{ course.description }}</p>
 
     <h3>Course Lessons</h3>
-    <div class="card-columns-vertical mb-4">
+    <div class="card-columns-vertical">
         {% for lesson in course.lesson_set.all %}
         <div class="card mt-2">
-            <div class="card-header bg-light font-weight-bold">
-                Lesson {{ lesson.order|add:1 }}: {{ lesson.title }}
+            <div class="card-header bg-light">
+                <h5>Lesson {{ lesson.order|add:1 }}: {{ lesson.title }}</h5>
             </div>
             <div class="card-body">
                 <p class="card-text">{{ lesson.content }}</p>
@@ -28,7 +30,7 @@
         {% endfor %}
     </div>
 
-    <h3>Course Exam</h3>
+    <h3 class="mt-4">Course Exam</h3>
     <form action="{% url 'onlinecourse:submit' course.id %}" method="post">
         {% csrf_token %}
         {% for question in course.question_set.all %}

@@ -1,5 +1,4 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
 from .models import Course, Lesson, Question, Choice, Submission, Enrollment
@@ -18,12 +17,9 @@ class CourseDetailView(generic.DetailView):
 def submit(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     user = request.user
-
     enrollment, _ = Enrollment.objects.get_or_create(user=user, course=course)
-
     submission = Submission.objects.create(enrollment=enrollment)
 
-    # Извлекаем выбранные ID ответов из формы
     selected_choice_ids = []
     for key in request.POST:
         if key.startswith('choice_'):
@@ -40,24 +36,25 @@ def show_exam_result(request, course_id, submission_id):
     submission = get_object_or_404(Submission, pk=submission_id)
 
     selected_ids = [c.id for c in submission.choices.all()]
-    total_score = 0
     grade = 0
+    possible_score = 0
 
     for question in course.question_set.all():
-        total_score += question.grade
+        possible_score += question.grade
         if question.is_get_score(selected_ids):
             grade += question.grade
 
-    possible_score = total_score
-    percent = int((grade / total_score) * 100) if total_score > 0 else 100
+    total_score = possible_score
+    percent = int((grade / possible_score) * 100) if possible_score > 0 else 100
     passed = percent >= 70
 
     context = {
         'course': course,
         'submission': submission,
         'grade': grade,
-        'total_score': total_score,
+        'score': grade,
         'possible_score': possible_score,
+        'total_score': total_score,
         'selected_ids': selected_ids,
         'percent': percent,
         'passed': passed,
