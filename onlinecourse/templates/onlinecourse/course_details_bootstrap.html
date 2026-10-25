@@ -3,18 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ course.name }}</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-<div class="container mt-3">
-    <h1>{{ course.name }}</h1>
-    <p>{{ course.description }}</p>
-    <h2>Lessons</h2>
-    <ul>
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="card-title">{{ course.name }}</h2>
+            <p class="card-text">{{ course.description }}</p>
+        </div>
+    </div>
+
+    <h3>Lessons</h3>
+    <ul class="list-group mb-4">
         {% for lesson in course.lesson_set.all %}
-        <li>{{ lesson.title }}</li>
+        <li class="list-group-item">{{ lesson.title }}</li>
+        {% empty %}
+        <li class="list-group-item">No lessons available.</li>
         {% endfor %}
     </ul>
+
+    <h3>Course Exam</h3>
+    <form action="{% url 'onlinecourse:submit' course.id %}" method="post">
+        {% csrf_token %}
+        {% for question in course.question_set.all %}
+        <div class="card mb-3">
+            <div class="card-header font-weight-bold">{{ question.question_text }}</div>
+            <div class="card-body">
+                {% for choice in question.choice_set.all %}
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="choice_{{ question.id }}" id="choice_{{ choice.id }}" value="{{ choice.id }}">
+                    <label class="form-check-label" for="choice_{{ choice.id }}">
+                        {{ choice.choice_text }}
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary btn-block mb-5">Submit Exam</button>
+    </form>
 </div>
 </body>
 </html>
